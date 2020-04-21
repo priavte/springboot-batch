@@ -67,7 +67,7 @@ public class DataBatchConfiguration {
     public Step handleDataStep() {
         return stepBuilderFactory.get("getData").
                 <Access, Access>chunk(100).        // <输入,输出> 。chunk通俗的讲类似于SQL的commit; 这里表示处理(processor)100条后写入(writer)一次。
-                faultTolerant().retryLimit(3).retry(Exception.class).skipLimit(100).skip(Exception.class). //捕捉到异常就重试,重试100次还是异常,JOB就停止并标志失败
+                //faultTolerant().retryLimit(3).retry(Exception.class).skipLimit(100).skip(Exception.class). //捕捉到异常就重试,重试100次还是异常,JOB就停止并标志失败
                 reader(getDataReader()).         //指定ItemReader
                 processor(getDataProcessor()).   //指定ItemProcessor
                 writer(getDataWriter()).         //指定ItemWriter
@@ -103,6 +103,9 @@ public class DataBatchConfiguration {
             @Override
             public Access process(Access access) throws Exception {
                 log.info("processor data : " + access.toString());  //模拟  假装处理数据,这里处理就是打印一下
+                /*if (access.getId().equals(188)) {
+                    throw new Exception("模拟错误.");
+                }*/
                 return access;
             }
         };
